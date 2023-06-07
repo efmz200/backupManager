@@ -1,5 +1,13 @@
 mongodb:
   enabled: true
+mariaDB:
+  enabled: true
+postgresql:
+  enabled: true
+neo4j:
+  enabled: true
+couchdb:
+  enabled: true
 elastic:
   version: 8.6.1
   replicas: 1
