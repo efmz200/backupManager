@@ -83,3 +83,6 @@ couchdb:
     diskSize: 2
     storageClass: hostpath
     provider: Azure
+
+backup:
+  schedule: "0 */12 * * *"

@@ -91,7 +91,7 @@ spec:
               - name: scripts
                 mountPath: /scripts
             command:
-              - "/scripts/backup.sh"
+              - "/scripts/mongodb.sh"
           {{- end }}
           {{- if .Values.mariadb.enabled }}
           - image: mcr.microsoft.com/azure-cli
@@ -127,7 +127,7 @@ spec:
               - name: scripts
                 mountPath: /scripts
             command:
-              - "/scripts/backup.sh"
+              - "/scripts/mariadb.sh"
           {{- end }}
           {{- if .Values.postgresql.enabled }}
           - image: mcr.microsoft.com/azure-cli
@@ -163,7 +163,7 @@ spec:
               - name: scripts
                 mountPath: /scripts
             command:
-              - "/scripts/backup.sh"
+              - "/scripts/postgresql.sh"
           {{- end }}
           {{- if .Values.neo4j.enabled }}
           - image: mcr.microsoft.com/azure-cli
@@ -199,7 +199,7 @@ spec:
               - name: scripts
                 mountPath: /scripts
             command:
-              - "/scripts/backup.sh"
+              - "/scripts/neo4j.sh"
           {{- end }}
           {{- if .Values.couchdb.enabled }}
           - image: mcr.microsoft.com/azure-cli
@@ -227,7 +227,7 @@ spec:
               - name: scripts
                 mountPath: /scripts
             command:
-              - "/scripts/backup.sh"
+              - "/scripts/couchdb.sh"
           {{- end }}
       restartPolicy: Never
   backoffLimit: 1

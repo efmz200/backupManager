@@ -8,5 +8,11 @@ dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 12.5.6
-digest: sha256:0d8215861f13e79286409a443fee61983586494d98c79ce8cc7c0888012c2ec0
-generated: "2023-06-07T17:03:42.53394-06:00"
+- name: neo4j
+  repository: https://helm.neo4j.com/neo4j
+  version: 5.1.0
+- name: couchdb
+  repository: https://apache.github.io/couchdb-helm
+  version: 4.4.0
+digest: sha256:ff3c5b6702e6da2a20076e3ea63387b5ebf76f5f8773b33ac05ba5107e7551c6
+generated: "2023-06-07T20:47:50.0626312-06:00"

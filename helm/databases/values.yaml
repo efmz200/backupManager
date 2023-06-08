@@ -5,6 +5,7 @@ mariaDB:
 postgresql:
   enabled: true
 neo4j:
+  name: ""
   enabled: false
 couchdb:
   enabled: false
