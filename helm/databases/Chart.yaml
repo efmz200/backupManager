@@ -41,12 +41,12 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   # Neo4j
-  - name: neo4j
-    version: "5.8.0"
-    repository: https://charts.bitnami.com/bitnami
-    condition: neo4j.enabled
+  #- name: neo4j
+  #  version: "5.1.0"
+  #  repository: https://helm.neo4j.com/neo4j
+  #  condition: neo4j.enabled
   # CouchDB
-  - name: couchdb
-    version: "3.3.2"
-    repository: https://charts.bitnami.com/bitnami    
-    condition: couchdb.enabled
+  #- name: couchdb
+  #  version: "4.4.0"
+  #  repository: https://apache.github.io/couchdb-helm    
+  #  condition: couchdb.enabled

@@ -3,13 +3,82 @@ mongo:
   config:
     namespace: default
     connectionString: databases-mongodb.default.svc.cluster.local:27017
-    storageAccount: filesmanagernereo
+    storageAccount: filesmanagerfta
     container: documents
     path: /mongo
     maxBackups: 3
     azureSecret: azure-storage-account-key
     secret: databases-mongodb
     name: mongo
+    schedule: "0 */12 * * *"
+    diskSize: 2
+    storageClass: hostpath
+    provider: Azure
+
+mariadb:
+  enabled: true
+  config:
+    namespace: default
+    connectionString: databases-mariadb.default.svc.cluster.local:3306
+    storageAccount: filesmanagerfta
+    container: documents
+    path: /maria
+    maxBackups: 3
+    azureSecret: azure-storage-account-key
+    secret: databases-mariadb
+    name: mariadb
+    schedule: "0 */12 * * *"
+    diskSize: 2
+    storageClass: hostpath
+    provider: Azure
+
+postgresql:
+  enabled: true
+  config:
+    namespace: default
+    connectionString: databases-postgresql.default.svc.cluster.local:5432
+    storageAccount: filesmanagerfta
+    container: documents
+    path: /postgres
+    maxBackups: 3
+    azureSecret: azure-storage-account-key
+    secret: databases-postgresql
+    name: postgresql
+    schedule: "0 */12 * * *"
+    diskSize: 2
+    storageClass: hostpath
+    provider: Azure
+
+neo4j:
+  enabled: true
+  config:
+    namespace: default
+    connectionString: databases-neo4j.default.svc.cluster.local:7474
+    storageAccount: filesmanagerfta
+    container: documents
+    path: /neo
+    maxBackups: 3
+    azureSecret: azure-storage-account-key
+    secret: databases-neo4j
+    name: neo4j
+    schedule: "0 */12 * * *"
+    diskSize: 2
+    storageClass: hostpath
+    provider: Azure
+
+
+couchdb:
+  enabled: true
+  config:
+    namespace: default
+    connectionString: databases-couchdb.default.svc.cluster.local:5984
+    storageAccount: filesmanagerfta
+    container: documents
+    path: /couch
+    maxBackups: 3
+    azureSecret: azure-storage-account-key
+    secret: databases-couchdb
+    name: couchdb
     schedule: "0 */12 * * *"
     diskSize: 2
     storageClass: hostpath
