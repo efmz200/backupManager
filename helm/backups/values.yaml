@@ -50,7 +50,7 @@ postgresql:
     provider: Azure
 
 neo4j:
-  enabled: true
+  enabled: false
   config:
     namespace: default
     connectionString: databases-neo4j.default.svc.cluster.local:7474
@@ -68,7 +68,7 @@ neo4j:
 
 
 couchdb:
-  enabled: true
+  enabled: false
   config:
     namespace: default
     connectionString: databases-couchdb.default.svc.cluster.local:5984

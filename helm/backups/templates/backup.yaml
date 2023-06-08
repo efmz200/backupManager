@@ -1,13 +1,16 @@
-{{- if .Values.mongo.enabled }}
+{{- if or .Values.mongo.enabled .Values.mariadb.enabled .Values.postgresql.enabled .Values.neo4j.enabled .Values.couchdb.enabled }}
 
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mongo-backups-script
+  name: backups-script
   namespace: {{ .Values.namespace }}
 data:
-{{ (.Files.Glob "scripts/mongodb.sh").AsConfig | indent 2 }}
+{{ (.Files.Glob "scripts/backup.sh").AsConfig | indent 2 }}
 ---
+{{- end }}
+
+{{- if .Values.mongo.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -21,13 +24,17 @@ spec:
     requests:
       storage: {{ .Values.mongo.config.diskSize }}
 ---
+{{- end }}
+
+{{- if or .Values.mongo.enabled .Values.mariadb.enabled .Values.postgresql.enabled .Values.neo4j.enabled .Values.couchdb.enabled }}
+
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: "mongo-backup"
-  namespace: {{ .Values.mongo.config.namespace }}
+  name: backup
+  namespace: {{ .Values.namespace }}
 spec:
-  schedule: {{ .Values.mongo.config.schedule }}
+  schedule: {{ .Values.backup.schedule }}
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:
@@ -38,104 +45,190 @@ spec:
           terminationGracePeriodSeconds: 0
           restartPolicy: Never
           volumes:
+          {{- if or .Values.mongo.enabled .Values.mariadb.enabled .Values.postgresql.enabled .Values.neo4j.enabled .Values.couchdb.enabled }}
           - name: scripts
             configMap:
-              name: mongo-backups-script
+              name: backups-script
               defaultMode: 0777
+          {{- end }}
+          {{- if .Values.mongo.enabled }}
           - name: mongo-snapshotter
             persistentVolumeClaim:
               claimName: mongo-snapshotter
+          {{- end }}
           containers:
-            - image: mcr.microsoft.com/azure-cli
-              name: mongo-snapshotter
-              env:
-                - name: MONGO_CONNECTION_STRING
-                  value: "{{ .Values.mongo.config.connectionString }}"
-                - name: AZURE_STORAGE_ACCOUNT
-                  value: "{{ .Values.mongo.config.storageAccount }}"
-                - name: CONTAINER
-                  value: "{{ .Values.mongo.config.container }}"
-                - name: BACKUP_PATH
-                  value: "{{ .Values.mongo.config.path }}"
-                - name: MAX_BACKUPS
-                  value: "{{ .Values.mongo.config.maxBackups }}"
-                - name: MONGO_USERNAME
-                  value: "root"
-                - name: MONGO_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{ .Values.mongo.config.secret }}"
-                      key: mongodb-root-password
-                      optional: false
-                - name: AZURE_STORAGE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{ .Values.mongo.config.azureSecret }}"
-                      key: azure.client.default.key
-                      optional: false
-              volumeMounts:
-                - mountPath: "/mongodump"
-                  name: mongo-snapshotter
-                - name: scripts
-                  mountPath: /scripts
-              command:
-                - "/scripts/mongodb.sh"
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: mongo-backup-0
-  namespace: {{ .Values.mongo.config.namespace }}
-spec:
-  template:
-    spec:
-      serviceAccountName: {{ .Values.mongo.config.serviceAccount }}
-      volumes:
-      - name: scripts
-        configMap:
-          name: mongo-backups-script
-          defaultMode: 0777
-      - name: mongo-snapshotter
-        persistentVolumeClaim:
-          claimName: mongo-snapshotter
-      containers:
-        - image: mcr.microsoft.com/azure-cli
-          name: mongo-snapshotter
-          env:
-            - name: MONGO_CONNECTION_STRING
-              value: "{{ .Values.mongo.config.connectionString }}"
-            - name: AZURE_STORAGE_ACCOUNT
-              value: "{{ .Values.mongo.config.storageAccount }}"
-            - name: CONTAINER
-              value: "{{ .Values.mongo.config.container }}"
-            - name: BACKUP_PATH
-              value: "{{ .Values.mongo.config.path }}"
-            - name: MAX_BACKUPS
-              value: "{{ .Values.mongo.config.maxBackups }}"
-            - name: MONGO_USERNAME
-              value: "root"
-            - name: MONGO_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: "{{ .Values.mongo.config.secret }}"
-                  key: mongodb-root-password
-                  optional: false
-            - name: AZURE_STORAGE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: "{{ .Values.mongo.config.azureSecret }}"
-                  key: azure.client.default.key
-                  optional: false
-          volumeMounts:
-            - mountPath: "/mongodump"
-              name: mongo-snapshotter
-            - name: scripts
-              mountPath: /scripts
-          command:
-            - "/scripts/mongodb.sh"
-            # - "tail"
-            # - "-f"
-            # - "/dev/null"
+          {{- if .Values.mongo.enabled }}
+          - image: mcr.microsoft.com/azure-cli
+            name: mongo-snapshotter
+            env:
+              - name: MONGO_CONNECTION_STRING
+                value: "{{ .Values.mongo.config.connectionString }}"
+              - name: AZURE_STORAGE_ACCOUNT
+                value: "{{ .Values.mongo.config.storageAccount }}"
+              - name: CONTAINER
+                value: "{{ .Values.mongo.config.container }}"
+              - name: BACKUP_PATH
+                value: "{{ .Values.mongo.config.path }}"
+              - name: MAX_BACKUPS
+                value: "{{ .Values.mongo.config.maxBackups }}"
+              - name: MONGO_USERNAME
+                value: "root"
+              - name: MONGO_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{ .Values.mongo.config.secret }}"
+                    key: mongodb-root-password
+                    optional: false
+              - name: AZURE_STORAGE_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{ .Values.mongo.config.azureSecret }}"
+                    key: azure.client.default.key
+                    optional: false
+            volumeMounts:
+              - mountPath: "/mongodump"
+                name: mongo-snapshotter
+              - name: scripts
+                mountPath: /scripts
+            command:
+              - "/scripts/backup.sh"
+          {{- end }}
+          {{- if .Values.mariadb.enabled }}
+          - image: mcr.microsoft.com/azure-cli
+            name: mariadb-snapshotter
+            env:
+              - name: MARIADB_CONNECTION_STRING
+                value: "{{ .Values.mariadb.config.connectionString }}"
+              - name: AZURE_STORAGE_ACCOUNT
+                value: "{{ .Values.mariadb.config.storageAccount }}"
+              - name: CONTAINER
+                value: "{{ .Values.mariadb.config.container }}"
+              - name: BACKUP_PATH
+                value: "{{ .Values.mariadb.config.path }}"
+              - name: MAX_BACKUPS
+                value: "{{ .Values.mariadb.config.maxBackups }}"
+              - name: MARIADB_USERNAME
+                value: "root"
+              - name: MARIADB_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{ .Values.mariadb.config.secret }}"
+                    key: mariadb-root-password
+                    optional: false
+              - name: AZURE_STORAGE_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{ .Values.mariadb.config.azureSecret }}"
+                    key: azure.client.default.key
+                    optional: false
+            volumeMounts:
+              - mountPath: "/mariadbbackup"
+                name: mariadb-snapshotter
+              - name: scripts
+                mountPath: /scripts
+            command:
+              - "/scripts/backup.sh"
+          {{- end }}
+          {{- if .Values.postgresql.enabled }}
+          - image: mcr.microsoft.com/azure-cli
+            name: postgresql-snapshotter
+            env:
+              - name: POSTGRESQL_CONNECTION_STRING
+                value: "{{ .Values.postgresql.config.connectionString }}"
+              - name: AZURE_STORAGE_ACCOUNT
+                value: "{{ .Values.postgresql.config.storageAccount }}"
+              - name: CONTAINER
+                value: "{{ .Values.postgresql.config.container }}"
+              - name: BACKUP_PATH
+                value: "{{ .Values.postgresql.config.path }}"
+              - name: MAX_BACKUPS
+                value: "{{ .Values.postgresql.config.maxBackups }}"
+              - name: POSTGRESQL_USERNAME
+                value: "root"
+              - name: POSTGRESQL_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{ .Values.postgresql.config.secret }}"
+                    key: postgresql-root-password
+                    optional: false
+              - name: AZURE_STORAGE_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{ .Values.postgresql.config.azureSecret }}"
+                    key: azure.client.default.key
+                    optional: false
+            volumeMounts:
+              - mountPath: "/postgresqlbackup"
+                name: postgresql-snapshotter
+              - name: scripts
+                mountPath: /scripts
+            command:
+              - "/scripts/backup.sh"
+          {{- end }}
+          {{- if .Values.neo4j.enabled }}
+          - image: mcr.microsoft.com/azure-cli
+            name: neo4j-snapshotter
+            env:
+              - name: NEO4J_CONNECTION_STRING
+                value: "{{ .Values.neo4j.config.connectionString }}"
+              - name: AZURE_STORAGE_ACCOUNT
+                value: "{{ .Values.neo4j.config.storageAccount }}"
+              - name: CONTAINER
+                value: "{{ .Values.neo4j.config.container }}"
+              - name: BACKUP_PATH
+                value: "{{ .Values.neo4j.config.path }}"
+              - name: MAX_BACKUPS
+                value: "{{ .Values.neo4j.config.maxBackups }}"
+              - name: NEO4J_USERNAME
+                value: "root"
+              - name: NEO4J_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{ .Values.neo4j.config.secret }}"
+                    key: neo4j-root-password
+                    optional: false
+              - name: AZURE_STORAGE_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{ .Values.neo4j.config.azureSecret }}"
+                    key: azure.client.default.key
+                    optional: false
+            volumeMounts:
+              - mountPath: "/neo4jbackup"
+                name: neo4j-snapshotter
+              - name: scripts
+                mountPath: /scripts
+            command:
+              - "/scripts/backup.sh"
+          {{- end }}
+          {{- if .Values.couchdb.enabled }}
+          - image: mcr.microsoft.com/azure-cli
+            name: couchdb-snapshotter
+            env:
+              - name: COUCHDB_CONNECTION_STRING
+                value: "{{ .Values.couchdb.config.connectionString }}"
+              - name: AZURE_STORAGE_ACCOUNT
+                value: "{{ .Values.couchdb.config.storageAccount }}"
+              - name: CONTAINER
+                value: "{{ .Values.couchdb.config.container }}"
+              - name: BACKUP_PATH
+                value: "{{ .Values.couchdb.config.path }}"
+              - name: MAX_BACKUPS
+                value: "{{ .Values.couchdb.config.maxBackups }}"
+              - name: AZURE_STORAGE_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{ .Values.couchdb.config.azureSecret }}"
+                    key: azure.client.default.key
+                    optional: false
+            volumeMounts:
+              - mountPath: "/couchdbbackup"
+                name: couchdb-snapshotter
+              - name: scripts
+                mountPath: /scripts
+            command:
+              - "/scripts/backup.sh"
+          {{- end }}
       restartPolicy: Never
   backoffLimit: 1
 

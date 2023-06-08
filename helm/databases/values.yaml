@@ -5,9 +5,9 @@ mariaDB:
 postgresql:
   enabled: true
 neo4j:
-  enabled: true
+  enabled: false
 couchdb:
-  enabled: true
+  enabled: false
   
 elastic:
   version: 8.6.1
