@@ -4,6 +4,6 @@ helm dependency update databases
 helm dependency build databases
 helm install databases databases
 
-heml install bakcups backups
+helm install bakcups backups
 
 
