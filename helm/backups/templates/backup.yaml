@@ -641,7 +641,7 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: "{{ .Values.couchdb.config.secret }}"
-                      key: couchdb-root-password
+                      key: adminPassword
                       optional: false
                 - name: AZURE_STORAGE_KEY
                   valueFrom:
@@ -694,7 +694,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: "{{ .Values.couchdb.config.secret }}"
-                  key: couchdb-root-password
+                  key: adminPassword
                   optional: false
             - name: AZURE_STORAGE_KEY
               valueFrom:

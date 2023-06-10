@@ -10,9 +10,9 @@ dependencies:
   version: 12.5.6
 - name: neo4j
   repository: https://helm.neo4j.com/neo4j
-  version: 5.1.0
+  version: 5.7.0
 - name: couchdb
   repository: https://apache.github.io/couchdb-helm
   version: 4.4.0
-digest: sha256:ff3c5b6702e6da2a20076e3ea63387b5ebf76f5f8773b33ac05ba5107e7551c6
-generated: "2023-06-07T20:47:50.0626312-06:00"
+digest: sha256:dbd5c6559f0aba478a4b71e0f8b824dd07a0fb8aecb4d402279001958cc994f9
+generated: "2023-06-10T00:34:44.8042486-06:00"

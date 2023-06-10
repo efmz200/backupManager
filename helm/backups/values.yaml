@@ -33,7 +33,7 @@ mariadb:
     provider: Azure
 
 postgresql:
-  enabled: true
+  enabled: false
   config:
     namespace: default
     connectionString: databases-postgresql.default.svc.cluster.local:5432
@@ -68,7 +68,7 @@ neo4j:
 
 
 couchdb:
-  enabled: false
+  enabled: true
   config:
     namespace: default
     connectionString: databases-couchdb.default.svc.cluster.local:5984
