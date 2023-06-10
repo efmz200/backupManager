@@ -202,59 +202,59 @@ spec:
                   value: "{{ .Values.mariadb.config.path }}"
                 - name: MAX_BACKUPS
                   value: "{{ .Values.mariadb.config.maxBackups }}"
-                - name: MONGO_USERNAME
+                - name: MARIA_USERNAME
                   value: "root"
-                - name: MONGO_PASSWORD
+                - name: MARIA_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: "{{ .Values.mongo.config.secret }}"
-                      key: mongodb-root-password
+                      name: "{{ .Values.mariadb.config.secret }}"
+                      key: mariadb-root-password
                       optional: false
                 - name: AZURE_STORAGE_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: "{{ .Values.mongo.config.azureSecret }}"
+                      name: "{{ .Values.mariadb.config.azureSecret }}"
                       key: azure.client.default.key
                       optional: false
               volumeMounts:
-                - mountPath: "/mongodump"
-                  name: mongo-snapshotter
+                - mountPath: "/mariadump"
+                  name: maria-snapshotter
                 - name: scripts
                   mountPath: /scripts
               command:
-                - "/scripts/mongodb.sh"
+                - "/scripts/mariadb.sh"
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: mongo-backup-0
-  namespace: {{ .Values.mongo.config.namespace }}
+  name: maria-backup-0
+  namespace: {{ .Values.mariadb.config.namespace }}
 spec:
   template:
     spec:
-      serviceAccountName: {{ .Values.mongo.config.serviceAccount }}
+      serviceAccountName: {{ .Values.mariadb.config.serviceAccount }}
       volumes:
       - name: scripts
         configMap:
-          name: mongo-backups-script
+          name: maria-backups-script
           defaultMode: 0777
-      - name: mongo-snapshotter
+      - name: maria-snapshotter
         persistentVolumeClaim:
-          claimName: mongo-snapshotter
+          claimName: maria-snapshotter
       containers:
         - image: mcr.microsoft.com/azure-cli
-          name: mongo-snapshotter
+          name: maria-snapshotter
           env:
-            - name: MONGO_CONNECTION_STRING
-              value: "{{ .Values.mongo.config.connectionString }}"
+            - name: MARIA_CONNECTION_STRING
+              value: "{{ .Values.mariadb.config.connectionString }}"
             - name: AZURE_STORAGE_ACCOUNT
-              value: "{{ .Values.mongo.config.storageAccount }}"
+              value: "{{ .Values.mariadb.config.storageAccount }}"
             - name: CONTAINER
-              value: "{{ .Values.mongo.config.container }}"
+              value: "{{ .Values.mariadb.config.container }}"
             - name: BACKUP_PATH
-              value: "{{ .Values.mongo.config.path }}"
+              value: "{{ .Values.mariadb.config.path }}"
             - name: MAX_BACKUPS
-              value: "{{ .Values.mongo.config.maxBackups }}"
+              value: "{{ .Values.mariadb.config.maxBackups }}"
             - name: MARIA_USERNAME
               value: "root"
             - name: MARIA_PASSWORD
@@ -291,7 +291,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgress-backups-script
+  name: postgre-backups-script
   namespace: {{ .Values.namespace }}
 data:
 {{ (.Files.Glob "scripts/postgresql.sh").AsConfig | indent 2 }}
@@ -353,7 +353,7 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: "{{ .Values.postgresql.config.secret }}"
-                      key: postgresql-root-password
+                      key: postgres-password
                       optional: false
                 - name: AZURE_STORAGE_KEY
                   valueFrom:
@@ -406,7 +406,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: "{{ .Values.postgresql.config.secret }}"
-                  key: postgresql-root-password
+                  key: postgres-password
                   optional: false
             - name: AZURE_STORAGE_KEY
               valueFrom:
