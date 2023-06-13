@@ -1,5 +1,5 @@
 mongo:
-  enabled: false
+  enabled: true
   config:
     namespace: default
     connectionString: databases-mongodb.default.svc.cluster.local:27017
@@ -18,6 +18,7 @@ mongo:
 mariadb:
   enabled: true
   config:
+    port: 3306
     namespace: default
     connectionString: databases-mariadb.default.svc.cluster.local:3306
     storageAccount: filesmanagerfta
@@ -68,7 +69,7 @@ neo4j:
 
 
 couchdb:
-  enabled: true
+  enabled: false
   config:
     namespace: default
     connectionString: databases-couchdb.default.svc.cluster.local:5984

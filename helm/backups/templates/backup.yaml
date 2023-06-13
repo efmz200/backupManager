@@ -204,6 +204,8 @@ spec:
                   value: "{{ .Values.mariadb.config.maxBackups }}"
                 - name: MARIA_USERNAME
                   value: "root"
+                - name: MARIA_PORT
+                  value: "{{ .Values.mariadb.config.port }}"
                 - name: MARIA_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -257,6 +259,8 @@ spec:
               value: "{{ .Values.mariadb.config.maxBackups }}"
             - name: MARIA_USERNAME
               value: "root"
+            - name: MARIA_PORT
+              value: "{{ .Values.mariadb.config.port }}"  
             - name: MARIA_PASSWORD
               valueFrom:
                 secretKeyRef:
