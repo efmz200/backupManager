@@ -3,8 +3,8 @@ mongo:
   config:
     namespace: default
     connectionString: databases-mongodb.default.svc.cluster.local:27017
-    storageAccount: filesmanagerfta
-    container: documents
+    storageAccount: orantoonstorageaccount
+    container: backups
     path: /mongoBackup
     maxBackups: 3
     azureSecret: azure-storage-account-key
@@ -16,13 +16,15 @@ mongo:
     provider: Azure
 
 mariadb:
-  enabled: true
+  enabled: false
   config:
     port: 3306
+    mariadbUser: root
+    databaseName: my_database
     namespace: default
     connectionString: databases-mariadb.default.svc.cluster.local:3306
-    storageAccount: filesmanagerfta
-    container: documents
+    storageAccount: orantoonstorageaccount
+    container: backups
     path: /mariaBackup
     maxBackups: 3
     azureSecret: azure-storage-account-key
@@ -38,8 +40,8 @@ postgresql:
   config:
     namespace: default
     connectionString: databases-postgresql.default.svc.cluster.local:5432
-    storageAccount: filesmanagerfta
-    container: documents
+    storageAccount: orantoonstorageaccount
+    container: backups
     path: /postgres
     maxBackups: 3
     azureSecret: azure-storage-account-key
@@ -55,8 +57,8 @@ neo4j:
   config:
     namespace: default
     connectionString: databases-neo4j.default.svc.cluster.local:7474
-    storageAccount: filesmanagerfta
-    container: documents
+    storageAccount: orantoonstorageaccount
+    container: backups
     path: /neo
     maxBackups: 3
     azureSecret: azure-storage-account-key
@@ -73,8 +75,8 @@ couchdb:
   config:
     namespace: default
     connectionString: databases-couchdb.default.svc.cluster.local:5984
-    storageAccount: filesmanagerfta
-    container: documents
+    storageAccount: orantoonstorageaccount
+    container: backups
     path: /couch
     maxBackups: 3
     azureSecret: azure-storage-account-key
