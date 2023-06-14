@@ -1,6 +1,6 @@
 echo 'storageaccount: '
-echo 'filesmanagerfta' | base64
+echo 'orantoonstorageaccount' | base64
 echo 'key: '
-echo 'l/hyKP5OC7THsPr0FvvNJWBg14+JGyFnbH++OwpEcfVEtV0+R0SJPM56EfTwY/NUfHbOZ686BWkT+AStardlVQ==' | base64
+echo 'j+oZmgHnYWULV7HlyBS/dhZakjZilUcrJz/GE/t52jFYIIf9HlorcrTnDFKbFIO5JX+MabTwRB+0+AStcEn+VQ==' | base64
 echo 'container: '
-echo 'DefaultEndpointsProtocol=https;AccountName=filesmanagerfta;AccountKey=l/hyKP5OC7THsPr0FvvNJWBg14+JGyFnbH++OwpEcfVEtV0+R0SJPM56EfTwY/NUfHbOZ686BWkT+AStardlVQ==;EndpointSuffix=core.windows.net    ' | base64
+echo 'DefaultEndpointsProtocol=https;AccountName=orantoonstorageaccount;AccountKey=j+oZmgHnYWULV7HlyBS/dhZakjZilUcrJz/GE/t52jFYIIf9HlorcrTnDFKbFIO5JX+MabTwRB+0+AStcEn+VQ==;EndpointSuffix=core.windows.net' | base64
