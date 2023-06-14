@@ -3,7 +3,7 @@ mongo:
   config:
     namespace: default
     connectionString: databases-mongodb.default.svc.cluster.local:27017
-    storageAccount: orantoonstorageaccount
+    storageAccount: backupsp3bd2
     container: backups
     path: /mongoBackup
     maxBackups: 3
@@ -18,12 +18,14 @@ mongo:
 mariadb:
   enabled: false
   config:
+    socket: /opt/bitnami/mariadb/tmp/mysql.sock
     port: 3306
+    host: databases-mariadb.default.svc.cluster.local
     mariadbUser: root
     databaseName: my_database
     namespace: default
     connectionString: databases-mariadb.default.svc.cluster.local:3306
-    storageAccount: orantoonstorageaccount
+    storageAccount: backupsp3bd2
     container: backups
     path: /mariaBackup
     maxBackups: 3
@@ -40,7 +42,7 @@ postgresql:
   config:
     namespace: default
     connectionString: databases-postgresql.default.svc.cluster.local:5432
-    storageAccount: orantoonstorageaccount
+    storageAccount: backupsp3bd2
     container: backups
     path: /postgres
     maxBackups: 3
@@ -57,7 +59,7 @@ neo4j:
   config:
     namespace: default
     connectionString: databases-neo4j.default.svc.cluster.local:7474
-    storageAccount: orantoonstorageaccount
+    storageAccount: backupsp3bd2
     container: backups
     path: /neo
     maxBackups: 3
@@ -75,7 +77,7 @@ couchdb:
   config:
     namespace: default
     connectionString: databases-couchdb.default.svc.cluster.local:5984
-    storageAccount: orantoonstorageaccount
+    storageAccount: backupsp3bd2
     container: backups
     path: /couch
     maxBackups: 3
@@ -87,3 +89,8 @@ couchdb:
     storageClass: hostpath
     provider: Azure
 
+azure:
+  storageAccount: backupsp3bd2
+  container: backups
+  azureSecret: azure-storage-account-key
+  provider: Azure
