@@ -54,7 +54,7 @@ spec:
                 - name: AZURE_STORAGE_ACCOUNT
                   value: "{{ .Values.mongo.config.storageAccount }}"
                 - name: CONTAINER
-                  value: "{{ .Values.mongo.config.container }}"
+                  value: "{{ .Values.azure.container }}"
                 - name: BACKUP_PATH
                   value: "{{ .Values.mongo.config.path }}"
                 - name: MAX_BACKUPS
@@ -70,7 +70,7 @@ spec:
                 - name: AZURE_STORAGE_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: "{{ .Values.mongo.config.azureSecret }}"
+                      name: "{{.Values.azure.azureSecret }}"
                       key: azure.client.default.key
                       optional: false
               volumeMounts:
@@ -107,7 +107,7 @@ spec:
             - name: AZURE_STORAGE_ACCOUNT
               value: "{{ .Values.mongo.config.storageAccount }}"
             - name: CONTAINER
-              value: "{{ .Values.mongo.config.container }}"
+              value: "{{ .Values.azure.container }}"
             - name: BACKUP_PATH
               value: "{{ .Values.mongo.config.path }}"
             - name: MAX_BACKUPS
@@ -123,7 +123,7 @@ spec:
             - name: AZURE_STORAGE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: "{{ .Values.mongo.config.azureSecret }}"
+                  name: "{{.Values.azure.azureSecret }}"
                   key: azure.client.default.key
                   optional: false
           volumeMounts:
@@ -194,18 +194,24 @@ spec:
               env:
                 - name: MARIA_CONNECTION_STRING
                   value: "{{ .Values.mariadb.config.connectionString }}"
+                - name: MARIADB_HOST
+                  value: "{{ .Values.mariadb.config.host }}"
+                - name: MARIADB_SOCKET
+                  value: "{{ .Values.mariadb.config.socket }}"
                 - name: AZURE_STORAGE_ACCOUNT
-                  value: "{{ .Values.mariadb.config.storageAccount }}"
+                  value: "{{ .Values.azure.storageAccount }}"
                 - name: CONTAINER
-                  value: "{{ .Values.mariadb.config.container }}"
+                  value: "{{ .Values.azure.container }}"
                 - name: BACKUP_PATH
                   value: "{{ .Values.mariadb.config.path }}"
                 - name: MAX_BACKUPS
                   value: "{{ .Values.mariadb.config.maxBackups }}"
                 - name: MARIA_USERNAME
-                  value: "root"
+                  value: "{{ .Values.mariadb.config.mariadbUser }}"
                 - name: MARIA_PORT
                   value: "{{ .Values.mariadb.config.port }}"
+                - name: MARIADB_DB
+                  value: "{{ .Values.mariadb.config.database }}"
                 - name: MARIA_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -215,7 +221,7 @@ spec:
                 - name: AZURE_STORAGE_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: "{{ .Values.mariadb.config.azureSecret }}"
+                      name: "{{ .Values.azure.azureSecret }}"
                       key: azure.client.default.key
                       optional: false
               volumeMounts:
@@ -247,20 +253,24 @@ spec:
         - image: mcr.microsoft.com/azure-cli
           name: maria-snapshotter
           env:
-            - name: MARIA_CONNECTION_STRING
-              value: "{{ .Values.mariadb.config.connectionString }}"
             - name: AZURE_STORAGE_ACCOUNT
-              value: "{{ .Values.mariadb.config.storageAccount }}"
+              value: "{{ .Values.azure.storageAccount }}"
+            - name: MARIADB_HOST
+              value: "{{ .Values.mariadb.config.host }}"
+            - name: MARIADB_SOCKET
+              value: "{{ .Values.mariadb.config.socket }}"
             - name: CONTAINER
-              value: "{{ .Values.mariadb.config.container }}"
+              value: "{{ .Values.azure.container }}"
             - name: BACKUP_PATH
               value: "{{ .Values.mariadb.config.path }}"
             - name: MAX_BACKUPS
               value: "{{ .Values.mariadb.config.maxBackups }}"
             - name: MARIA_USERNAME
-              value: "root"
+              value: "{{ .Values.mariadb.config.mariadbUser }}"
             - name: MARIA_PORT
-              value: "{{ .Values.mariadb.config.port }}"  
+              value: "{{ .Values.mariadb.config.port }}"
+            - name: MARIADB_DB
+              value: "{{ .Values.mariadb.config.database }}"
             - name: MARIA_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -270,9 +280,15 @@ spec:
             - name: AZURE_STORAGE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: "{{ .Values.mariadb.config.azureSecret }}"
+                  name: "{{ .Values.azure.azureSecret }}"
                   key: azure.client.default.key
                   optional: false
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.mariadb.config.secret }}"
+                  key: mariadb-root-password
+                  optional: false
+            
           volumeMounts:
             - mountPath: "/mariadump"
               name: maria-snapshotter
@@ -344,9 +360,9 @@ spec:
                 - name: POSTGRES_CONNECTION_STRING
                   value: "{{ .Values.postgresql.config.connectionString }}"
                 - name: AZURE_STORAGE_ACCOUNT
-                  value: "{{ .Values.postgresql.config.storageAccount }}"
+                  value: "{{ .Values.azure.storageAccount }}"
                 - name: CONTAINER
-                  value: "{{ .Values.postgresql.config.container }}"
+                  value: "{{ .Values.azure.container }}"
                 - name: BACKUP_PATH
                   value: "{{ .Values.postgresql.config.path }}"
                 - name: MAX_BACKUPS
@@ -362,7 +378,7 @@ spec:
                 - name: AZURE_STORAGE_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: "{{ .Values.postgresql.config.azureSecret }}"
+                      name: "{{ .Values.azure.azureSecret }}"
                       key: azure.client.default.key
                       optional: false
               volumeMounts:
@@ -397,9 +413,9 @@ spec:
             - name: POSTGRES_CONNECTION_STRING
               value: "{{ .Values.postgresql.config.connectionString }}"
             - name: AZURE_STORAGE_ACCOUNT
-              value: "{{ .Values.postgresql.config.storageAccount }}"
+              value: "{{ .Values.azure.storageAccount }}"
             - name: CONTAINER
-              value: "{{ .Values.postgresql.config.container }}"
+              value: "{{ .Values.azure.container }}"
             - name: BACKUP_PATH
               value: "{{ .Values.postgresql.config.path }}"
             - name: MAX_BACKUPS
@@ -415,7 +431,7 @@ spec:
             - name: AZURE_STORAGE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: "{{ .Values.postgresql.config.azureSecret }}"
+                  name: "{{ .Values.azure.azureSecret }}"
                   key: azure.client.default.key
                   optional: false
           volumeMounts:
@@ -488,9 +504,9 @@ spec:
                 - name: NEO4J_CONNECTION_STRING
                   value: "{{ .Values.neo4j.config.connectionString }}"
                 - name: AZURE_STORAGE_ACCOUNT
-                  value: "{{ .Values.neo4j.config.storageAccount }}"
+                  value: "{{ .Values.azure.storageAccount }}"
                 - name: CONTAINER
-                  value: "{{ .Values.neo4j.config.container }}"
+                  value: "{{ .Values.azure.container}}"
                 - name: BACKUP_PATH
                   value: "{{ .Values.neo4j.config.path }}"
                 - name: MAX_BACKUPS
@@ -506,7 +522,7 @@ spec:
                 - name: AZURE_STORAGE_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: "{{ .Values.neo4j.config.azureSecret }}"
+                      name: "{{ .Values.azure.azureSecret }}"
                       key: azure.client.default.key
                       optional: false
               volumeMounts:
@@ -541,9 +557,9 @@ spec:
             - name: NEO4J_CONNECTION_STRING
               value: "{{ .Values.neo4j.config.connectionString }}"
             - name: AZURE_STORAGE_ACCOUNT
-              value: "{{ .Values.neo4j.config.storageAccount }}"
+              value: "{{ .Values.azure.storageAccount }}"
             - name: CONTAINER
-              value: "{{ .Values.neo4j.config.container }}"
+              value: "{{ .Values.azure.container}}"
             - name: BACKUP_PATH
               value: "{{ .Values.neo4j.config.path }}"
             - name: MAX_BACKUPS
@@ -559,7 +575,7 @@ spec:
             - name: AZURE_STORAGE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: "{{ .Values.neo4j.config.azureSecret }}"
+                  name: "{{ .Values.azure.azureSecret }}"
                   key: azure.client.default.key
                   optional: false
           volumeMounts:
@@ -632,9 +648,9 @@ spec:
                 - name: COUCH_CONNECTION_STRING
                   value: "{{ .Values.couchdb.config.connectionString }}"
                 - name: AZURE_STORAGE_ACCOUNT
-                  value: "{{ .Values.couchdb.config.storageAccount }}"
+                  value: "{{ .Values.azure.storageAccount }}"
                 - name: CONTAINER
-                  value: "{{ .Values.couchdb.config.container }}"
+                  value: "{{ .Values.azure.container }}"
                 - name: BACKUP_PATH
                   value: "{{ .Values.couchdb.config.path }}"
                 - name: MAX_BACKUPS
@@ -650,7 +666,7 @@ spec:
                 - name: AZURE_STORAGE_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: "{{ .Values.couchdb.config.azureSecret }}"
+                      name: "{{ .Values.azure.azureSecret }}"
                       key: azure.client.default.key
                       optional: false
               volumeMounts:
@@ -685,9 +701,9 @@ spec:
             - name: COUCH_CONNECTION_STRING
               value: "{{ .Values.couchdb.config.connectionString }}"
             - name: AZURE_STORAGE_ACCOUNT
-              value: "{{ .Values.couchdb.config.storageAccount }}"
+              value: "{{ .Values.azure.storageAccount }}"
             - name: CONTAINER
-              value: "{{ .Values.couchdb.config.container }}"
+              value: "{{ .Values.azure.container }}"
             - name: BACKUP_PATH
               value: "{{ .Values.couchdb.config.path }}"
             - name: MAX_BACKUPS
@@ -703,7 +719,7 @@ spec:
             - name: AZURE_STORAGE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: "{{ .Values.couchdb.config.azureSecret }}"
+                  name: "{{ .Values.azure.azureSecret }}"
                   key: azure.client.default.key
                   optional: false
           volumeMounts:
