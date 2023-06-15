@@ -140,7 +140,10 @@ spec:
   backoffLimit: 1
 {{- end}}
 
-#Maria
+###################
+#Maria ############
+###################
+
 {{- if .Values.mariadb.enabled }}
 
 apiVersion: v1
@@ -296,7 +299,9 @@ spec:
 
 {{- end }}
 
-#Postgres
+###################
+#Postgres #########
+###################
 
 {{- if .Values.postgresql.enabled }}
 
@@ -361,6 +366,10 @@ spec:
                   value: "{{ .Values.postgresql.config.maxBackups }}"
                 - name: POSTGRES_USERNAME
                   value: "root"
+                - name: POSTGRES_HOST
+                  value: "{{ .Values.postgresql.config.host }}"
+                - name: POSTGRES_PORT
+                  value: "{{ .Values.postgresql.config.port }}"
                 - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -414,6 +423,10 @@ spec:
               value: "{{ .Values.postgresql.config.maxBackups }}"
             - name: POSTGRES_USERNAME
               value: "root"
+            - name: POSTGRES_HOST
+              value: "{{ .Values.postgresql.config.host }}"
+            - name: POSTGRES_PORT
+              value: "{{ .Values.postgresql.config.port }}"
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -441,7 +454,10 @@ spec:
 
 {{- end }}
 
-#neo4j
+###################
+#neo4j ############
+###################
+
 {{- if .Values.neo4j.enabled }}
 
 apiVersion: v1
@@ -585,7 +601,10 @@ spec:
 
 {{- end }}
 
-#couchdb
+###################
+#couchdb ##########
+###################
+
 {{- if .Values.couchdb.enabled }}
 
 apiVersion: v1

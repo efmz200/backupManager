@@ -38,10 +38,11 @@ mariadb:
     provider: Azure
 
 postgresql:
-  enabled: false
+  enabled: true
   config:
     namespace: default
-
+    hots: databases-postgresql
+    port: 5432
     connectionString: databases-postgresql.default.svc.cluster.local:5432
     storageAccount: backupsp3bd2
     container: backups
