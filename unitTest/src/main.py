@@ -7,7 +7,7 @@ import couchdb
 def pruebaMysql():
     host = 'localhost'
     user = 'root'
-    password = '4ZzDUzxP1Y'
+    password = 'ASbXWEJhho'
     port = 53892
     database = 'my_database'
     cnx = mysql.connector.connect(host=host, port=port, user=user, password=password, database=database)
@@ -23,7 +23,7 @@ def pruebaMysql():
     return (salida)
 
 def pruebaMongo():
-    url = 'mongodb://root:jEpFg9sSkd@localhost:57652/'
+    url = 'mongodb://root:snskz7chVU@localhost:57916/'
     myclient = MongoClient(url)
     local_db = myclient.database_test
     local_collection = local_db['test_collection']
@@ -89,7 +89,7 @@ def pruebaNeo4j():
 
 def pruebaCoudhDB():
     # Establecer conexión con la base de datos de CouchDB
-    server = couchdb.Server('http://admin:BbvzPSilnxftLFMfDZ2h@localhost:59159')  # Reemplaza con la URL de tu servidor CouchDB
+    server = couchdb.Server('http://admin:C0WQSmJEsrTaeqFzmUUL@localhost:59159')  # Reemplaza con la URL de tu servidor CouchDB
     database_name = 'baseprueba'  # Reemplaza con el nombre de tu base de datos
     database = server[database_name]
 
@@ -100,5 +100,5 @@ def pruebaCoudhDB():
     # Recorrer los documentos y mostrar su contenido
     for row in result.rows:
         doc = row.doc
-        resultado += [{"Data": str(doc)}]
+        resultado += [{"Data": str(doc).split("' ")[-1]}]
     return(resultado)
