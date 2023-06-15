@@ -2,7 +2,7 @@ import subprocess
 
 # Definir los parámetros del backup
 user = 'root'
-password = '4ZzDUzxP1Y'
+password = 'ASbXWEJhho'
 host = 'localhost'
 port = 53892
 target_dir = '/backpups'

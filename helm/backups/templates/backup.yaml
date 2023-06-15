@@ -211,7 +211,7 @@ spec:
                 - name: MARIA_PORT
                   value: "{{ .Values.mariadb.config.port }}"
                 - name: MARIADB_DB
-                  value: "{{ .Values.mariadb.config.database }}"
+                  value: "{{ .Values.mariadb.config.databaseName}}"
                 - name: MARIA_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -270,7 +270,7 @@ spec:
             - name: MARIA_PORT
               value: "{{ .Values.mariadb.config.port }}"
             - name: MARIADB_DB
-              value: "{{ .Values.mariadb.config.database }}"
+              value: "{{ .Values.mariadb.config.databaseName }}"
             - name: MARIA_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -512,12 +512,12 @@ spec:
                 - name: MAX_BACKUPS
                   value: "{{ .Values.neo4j.config.maxBackups }}"
                 - name: NEO4J_USERNAME
-                  value: "root"
+                  value: "neo4j"
                 - name: NEO4J_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: "{{ .Values.neo4j.config.secret }}"
-                      key: neo4j-root-password
+                      key: NEO4J_AUTH
                       optional: false
                 - name: AZURE_STORAGE_KEY
                   valueFrom:
@@ -565,12 +565,12 @@ spec:
             - name: MAX_BACKUPS
               value: "{{ .Values.neo4j.config.maxBackups }}"
             - name: NEO4J_USERNAME
-              value: "root"
+              value: "neo4j"
             - name: NEO4J_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: "{{ .Values.neo4j.config.secret }}"
-                  key: neo4j-root-password
+                  key: NEO4J_AUTH
                   optional: false
             - name: AZURE_STORAGE_KEY
               valueFrom:

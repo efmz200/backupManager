@@ -1,12 +1,12 @@
 from pymongo import MongoClient
 
-host = 'localhost'  # Cambia "nombre_del_servicio" por el nombre real del servicio de MongoDB
-port = 57652
+host = 'localhost'  
+port = 57916
 database = 'myDatabase'
 collection = 'myColecion'
 username = 'root'
-password = 'jEpFg9sSkd'
-url = 'mongodb://root:jEpFg9sSkd@localhost:57652/'
+password = 'snskz7chVU'
+url = 'mongodb://root:snskz7chVU@localhost:57916/'
 #print(url)
 myclient = MongoClient(url)
 myclient.list_database_names()

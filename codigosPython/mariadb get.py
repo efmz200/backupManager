@@ -2,7 +2,7 @@ import mysql.connector
 host = 'localhost'
 
 user = 'root'
-password = '4ZzDUzxP1Y'
+password = 'ASbXWEJhho'
 port = 53892
 database = 'my_database'
 

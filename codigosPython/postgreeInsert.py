@@ -4,7 +4,7 @@ host = 'localhost'
 port = '59838'
 database = 'template0'
 user = 'postgres'
-password = 'q4S3UQLQL9'
+password = 'guPfvKzAyp'
 
 connection = psycopg2.connect(
     host=host,
@@ -24,7 +24,10 @@ create_table_query = '''
         columna2 VARCHAR(50)
     );
 '''
-cursor.execute(create_table_query)
+try:
+    cursor.execute(create_table_query)
+except :
+    print('La tabla ya existe')
 
 # Agregar datos a la tabla
 insert_data_query = '''

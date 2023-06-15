@@ -2,14 +2,12 @@ import mysql.connector
 host = 'localhost'
 
 user = 'root'
-password = '4ZzDUzxP1Y'
+password = 'ASbXWEJhho'
 port = 53892
 database = 'my_database'
-
 cnx = mysql.connector.connect(host=host, port=port, user=user, password=password, database=database)
-
 cursor = cnx.cursor()
-    
+print ("Conectado a la base de datos")
 create_table_query = '''
     CREATE TABLE nombre_de_la_tabla (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -18,7 +16,11 @@ create_table_query = '''
         email VARCHAR(255)
     )
 '''
-#cursor.execute(create_table_query)
+try:
+    cursor.execute(create_table_query)
+except:
+    print ("La tabla ya existe")
+
 
 insert_query = '''
     INSERT INTO nombre_de_la_tabla (nombre, edad, email)

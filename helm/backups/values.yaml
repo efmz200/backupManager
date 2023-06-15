@@ -1,5 +1,5 @@
 mongo:
-  enabled: true
+  enabled: false
   config:
     namespace: default
     connectionString: databases-mongodb.default.svc.cluster.local:27017
@@ -16,7 +16,7 @@ mongo:
     provider: Azure
 
 mariadb:
-  enabled: false
+  enabled: true
   config:
     socket: /opt/bitnami/mariadb/tmp/mysql.sock
     port: 3306
@@ -58,18 +58,19 @@ neo4j:
   enabled: false
   config:
     namespace: default
-    connectionString: databases-neo4j.default.svc.cluster.local:7474
+    connectionString: databases-neo4j.default.svc.cluster.local
     storageAccount: backupsp3bd2
     container: backups
     path: /neo
     maxBackups: 3
     azureSecret: azure-storage-account-key
-    secret: databases-neo4j
+    secret: my-neo4j-auth
     name: neo4j
     schedule: "0 */12 * * *"
     diskSize: 2
     storageClass: hostpath
     provider: Azure
+    username: neo4j
 
 
 couchdb:

@@ -1,7 +1,7 @@
 import couchdb
 
 # Establecer conexión con la base de datos de CouchDB
-server = couchdb.Server('http://admin:BbvzPSilnxftLFMfDZ2h@localhost:59159')  # Reemplaza con la URL de tu servidor CouchDB
+server = couchdb.Server('http://admin:C0WQSmJEsrTaeqFzmUUL@localhost:59159')  # Reemplaza con la URL de tu servidor CouchDB
 database_name = 'baseprueba'  # Reemplaza con el nombre de tu base de datos
 
 db = server[database_name]
@@ -15,5 +15,5 @@ resultado = []
 for row in result.rows:
     doc_id = row.id
     doc = row.doc
-    resultado += [{"Data": str(doc)}]
+    resultado += [{"Data": str(doc).split("' ")[-1]}]
 print(resultado)

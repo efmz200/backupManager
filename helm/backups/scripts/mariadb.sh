@@ -1,20 +1,30 @@
 #!/bin/bash
 
 DATE=$(date '+%Y%m%d%H%M')
-mkdir -p /mariadbbackup/$DATE
+mkdir -p /mariadump/$DATE
 
 apk update
 apk upgrade
 apk add mariadb-backup
 
 az config set extension.use_dynamic_install=yes_without_prompt
+#result=$(nslookup databases-mariadb.default.svc.cluster.local:3306 )
+#echo $result
+HOST=$(nslookup $MARIADB_HOST | awk '/Address: / { print $2 }')
+echo '----------------'
+groups
+echo '----------------'
+echo "host: $HOST"
+socket_path=$(find / -type s -name 'mysql.sock')
+echo "Socket path: $socket_path"
 
-mariabackup --backup \
-   --target-dir=/mariadbbackup/$DATE/ \
-   --user=$MARIADB_USERNAME --password=$MARIA_PASSWORD --port=$MARIA_PORT --host=$MARIADB_HOST
+echo '----------------'
+mariabackup  --user=$MARIA_USERNAME --password=$MARIA_PASSWORD --host=$HOST --port=$MARIA_PORT --databases=$MARIADB_DB --backup --target-dir=/mariadump/$DATE/ --compress 
+#mariabackup --user=$MARIA_USERNAME --password=$MARIA_PASSWORD --port=$MARIA_PORT --databases=$MARIADB_DB --backup --target-dir=/mariadump/$DATE/ --compress
+# mariabackup --backup \
+#    --target-dir=/mariadump/$DATE/ \
+#    --user=$MARIA_USERNAME --password=$MARIA_PASSWORD --host=$HOST --port=$MARIA_PORT
+echo '----------------'
+az storage blob directory upload --container $CONTAINER -s /mariadump/$DATE -d $BACKUP_PATH --auth-mode key --recursive
 
-# mysqldump --host="$MYSQL_HOST" -u $MYSQL_USERNAME -p$MYSQL_PASSWORD --databases $MYSQL_DATABASE --single-transaction --compress --result-file=/mariadbbackup/$DATE/database.sql
-
-az storage blob directory upload --container $CONTAINER -s /mariadbbackup/$DATE -d $BACKUP_PATH --auth-mode key --recursive
-
-rm -rf /mariadbbackup/$DATE
+rm -rf /mariadump/$DATE
