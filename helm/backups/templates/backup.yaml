@@ -195,36 +195,36 @@ spec:
             - image: mcr.microsoft.com/azure-cli
               name: maria-snapshotter
               env:
-            - name: AZURE_STORAGE_ACCOUNT
-              value: "{{ .Values.azure.storageAccount }}"
-            - name: MARIADB_HOST
-              value: "{{ .Values.mariadb.config.host }}"
-            - name: MARIADB_SOCKET
-              value: "{{ .Values.mariadb.config.socket }}"
-            - name: CONTAINER
-              value: "{{ .Values.azure.container }}"
-            - name: BACKUP_PATH
-              value: "{{ .Values.mariadb.config.path }}"
-            - name: MAX_BACKUPS
-              value: "{{ .Values.mariadb.config.maxBackups }}"
-            - name: MARIA_USERNAME
-              value: "{{ .Values.mariadb.config.mariadbUser }}"
-            - name: MARIA_PORT
-              value: "{{ .Values.mariadb.config.port }}"
-            - name: MARIADB_DB
-              value: "{{ .Values.mariadb.config.databaseName }}"
-            - name: MARIA_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: "{{ .Values.mariadb.config.secret }}"
-                  key: mariadb-root-password
-                  optional: false
-            - name: AZURE_STORAGE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: "{{ .Values.azure.azureSecret }}"
-                  key: azure.client.default.key
-                  optional: false    
+                - name: AZURE_STORAGE_ACCOUNT
+                  value: "{{ .Values.azure.storageAccount }}"
+                - name: MARIADB_HOST
+                  value: "{{ .Values.mariadb.config.host }}"
+                - name: MARIADB_SOCKET
+                  value: "{{ .Values.mariadb.config.socket }}"
+                - name: CONTAINER
+                  value: "{{ .Values.azure.container }}"
+                - name: BACKUP_PATH
+                  value: "{{ .Values.mariadb.config.path }}"
+                - name: MAX_BACKUPS
+                  value: "{{ .Values.mariadb.config.maxBackups }}"
+                - name: MARIA_USERNAME
+                  value: "{{ .Values.mariadb.config.mariadbUser }}"
+                - name: MARIA_PORT
+                  value: "{{ .Values.mariadb.config.port }}"
+                - name: MARIADB_DB
+                  value: "{{ .Values.mariadb.config.databaseName }}"
+                - name: MARIA_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ .Values.mariadb.config.secret }}"
+                      key: mariadb-root-password
+                      optional: false
+                - name: AZURE_STORAGE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ .Values.azure.azureSecret }}"
+                      key: azure.client.default.key
+                      optional: false    
               volumeMounts:
                 - mountPath: "/mariadump"
                   name: maria-snapshotter
