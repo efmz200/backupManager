@@ -20,7 +20,7 @@ mariadb:
   config:
     socket: /opt/bitnami/mariadb/tmp/mysql.sock
     port: 3306
-    host: databases-mariadb.default.svc.cluster.local
+    host: databases-mariadb
     mariadbUser: root
     databaseName: my_database
     namespace: default
@@ -41,6 +41,7 @@ postgresql:
   enabled: false
   config:
     namespace: default
+
     connectionString: databases-postgresql.default.svc.cluster.local:5432
     storageAccount: backupsp3bd2
     container: backups
