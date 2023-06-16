@@ -44,13 +44,22 @@ En este punto podra ingresar al lens, en la seccion de catalogo, clusters, docke
   
 En esta sección es importante que ingrese a la carpeta helm/backups y entre al archivo values.yaml. En este archivo encontrará las configuraciones de los backups de las bases de datos, los cuales se pueden activar o desactivar si se pone en true o en false el valor enable de cada base de datos
 
-Ademas, en la parte final del archivo deberá cambiar los valores de storageAccount y de container segun la configuracion que tenga en azure para luego ejecutar los siguientes comandos
+Ademas, en la parte final del archivo deberá cambiar los valores de storageAccount y de container segun la configuracion que tenga en azure para luego ejecutar el siguiente comando:
 
 ```
-helm dependency update databases
-helm dependency build databases
 helm install databases databases
 ```
+
+- Instalacion de los Jobs de los restores
+   
+En esta sección es importante que ingrese a la carpeta helm/restores y entre al archivo values.yaml. En este archivo encontrará las configuraciones de los restores de las bases de datos, los cuales se pueden activar o desactivar si se pone en true o en false el valor enable de cada base de datos
+
+Ademas, en la parte final del archivo deberá cambiar los valores de storageAccount y de container segun la configuracion que tenga en azure para luego ejecutar el siguiente comando:
+
+```
+helm install restores restores
+```
+
 ## **Pruebas y sus pasos para reproducirlas**
 Para probar las bases de datos se utilizaron archivos .py para poder realizar conecciones a las respectivas bases de datos y probar consultas cobre estas. Es importante tener las librerias de python intaladas para realizar las pruebas respectivas. Los archivos de python están almacenados en la carpeta pruebasBases y están separado en carpetas según la base.
 Estás pruebas se realizaron para poder comprar la correcta instalación de las bases de datos, la conexión con las mismas e incluso para revisar si los backups se restauraron de la manera correcta.
