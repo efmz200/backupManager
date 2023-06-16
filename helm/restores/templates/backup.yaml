@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mongo-backups-script
+  name: mongo-restores-script
   namespace: {{ .Values.namespace }}
 data:
 {{ (.Files.Glob "scripts/mongodb.sh").AsConfig | indent 2 }}
@@ -21,70 +21,11 @@ spec:
     requests:
       storage: {{ .Values.mongo.config.diskSize }}
 ---
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: "mongo-backup"
-  namespace: {{ .Values.mongo.config.namespace }}
-spec:
-  schedule: {{ .Values.mongo.config.schedule }}
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
-  jobTemplate:
-    spec:
-      backoffLimit: 3
-      template:
-        spec:
-          terminationGracePeriodSeconds: 0
-          restartPolicy: Never
-          volumes:
-          - name: scripts
-            configMap:
-              name: mongo-backups-script
-              defaultMode: 0777
-          - name: mongo-snapshotter
-            persistentVolumeClaim:
-              claimName: mongo-snapshotter
-          containers:
-            - image: mcr.microsoft.com/azure-cli
-              name: mongo-snapshotter
-              env:
-                - name: MONGO_CONNECTION_STRING
-                  value: "{{ .Values.mongo.config.connectionString }}"
-                - name: AZURE_STORAGE_ACCOUNT
-                  value: "{{ .Values.mongo.config.storageAccount }}"
-                - name: CONTAINER
-                  value: "{{ .Values.azure.container }}"
-                - name: BACKUP_PATH
-                  value: "{{ .Values.mongo.config.path }}"
-                - name: MAX_BACKUPS
-                  value: "{{ .Values.mongo.config.maxBackups }}"
-                - name: MONGO_USERNAME
-                  value: "root"
-                - name: MONGO_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{ .Values.mongo.config.secret }}"
-                      key: mongodb-root-password
-                      optional: false
-                - name: AZURE_STORAGE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{.Values.azure.azureSecret }}"
-                      key: azure.client.default.key
-                      optional: false
-              volumeMounts:
-                - mountPath: "/mongodump"
-                  name: mongo-snapshotter
-                - name: scripts
-                  mountPath: /scripts
-              command:
-                - "/scripts/mongodb.sh"
----
+ 
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: mongo-backup-0
+  name: mongo-restore-0
   namespace: {{ .Values.mongo.config.namespace }}
 spec:
   template:
@@ -93,7 +34,7 @@ spec:
       volumes:
       - name: scripts
         configMap:
-          name: mongo-backups-script
+          name: mongo-restores-script
           defaultMode: 0777
       - name: mongo-snapshotter
         persistentVolumeClaim:
@@ -108,12 +49,14 @@ spec:
               value: "{{ .Values.mongo.config.storageAccount }}"
             - name: CONTAINER
               value: "{{ .Values.azure.container }}"
-            - name: BACKUP_PATH
+            - name: restore_PATH
               value: "{{ .Values.mongo.config.path }}"
-            - name: MAX_BACKUPS
-              value: "{{ .Values.mongo.config.maxBackups }}"
+            - name: MAX_restoreS
+              value: "{{ .Values.mongo.config.maxrestores }}"
             - name: MONGO_USERNAME
               value: "root"
+            - name: DATE
+              value: "{{ .Values.restore.date }}"
             - name: MONGO_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -149,7 +92,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: maria-backups-script
+  name: maria-restores-script
   namespace: {{ .Values.namespace }}
 data:
 {{ (.Files.Glob "scripts/mariadb.sh").AsConfig | indent 2 }}
@@ -167,76 +110,11 @@ spec:
     requests:
       storage: {{ .Values.mariadb.config.diskSize }}
 ---
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: "maria-backup"
-  namespace: {{ .Values.mariadb.config.namespace }}
-spec:
-  schedule: {{ .Values.mariadb.config.schedule }}
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
-  jobTemplate:
-    spec:
-      backoffLimit: 3
-      template:
-        spec:
-          terminationGracePeriodSeconds: 0
-          restartPolicy: Never
-          volumes:
-          - name: scripts
-            configMap:
-              name: maria-backups-script
-              defaultMode: 0777
-          - name: maria-snapshotter
-            persistentVolumeClaim:
-              claimName: maria-snapshotter
-          containers:
-            - image: mcr.microsoft.com/azure-cli
-              name: maria-snapshotter
-              env:
-                - name: AZURE_STORAGE_ACCOUNT
-                  value: "{{ .Values.azure.storageAccount }}"
-                - name: MARIADB_HOST
-                  value: "{{ .Values.mariadb.config.host }}"
-                - name: MARIADB_SOCKET
-                  value: "{{ .Values.mariadb.config.socket }}"
-                - name: CONTAINER
-                  value: "{{ .Values.azure.container }}"
-                - name: BACKUP_PATH
-                  value: "{{ .Values.mariadb.config.path }}"
-                - name: MAX_BACKUPS
-                  value: "{{ .Values.mariadb.config.maxBackups }}"
-                - name: MARIA_USERNAME
-                  value: "{{ .Values.mariadb.config.mariadbUser }}"
-                - name: MARIA_PORT
-                  value: "{{ .Values.mariadb.config.port }}"
-                - name: MARIADB_DB
-                  value: "{{ .Values.mariadb.config.databaseName }}"
-                - name: MARIA_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{ .Values.mariadb.config.secret }}"
-                      key: mariadb-root-password
-                      optional: false
-                - name: AZURE_STORAGE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{ .Values.azure.azureSecret }}"
-                      key: azure.client.default.key
-                      optional: false    
-              volumeMounts:
-                - mountPath: "/mariadump"
-                  name: maria-snapshotter
-                - name: scripts
-                  mountPath: /scripts
-              command:
-                - "/scripts/mariadb.sh"
----
+ 
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: maria-backup-0
+  name: maria-restore-0
   namespace: {{ .Values.mariadb.config.namespace }}
 spec:
   template:
@@ -245,7 +123,7 @@ spec:
       volumes:
       - name: scripts
         configMap:
-          name: maria-backups-script
+          name: maria-restores-script
           defaultMode: 0777
       - name: maria-snapshotter
         persistentVolumeClaim:
@@ -262,14 +140,16 @@ spec:
               value: "{{ .Values.mariadb.config.socket }}"
             - name: CONTAINER
               value: "{{ .Values.azure.container }}"
-            - name: BACKUP_PATH
+            - name: restore_PATH
               value: "{{ .Values.mariadb.config.path }}"
-            - name: MAX_BACKUPS
-              value: "{{ .Values.mariadb.config.maxBackups }}"
+            - name: MAX_restoreS
+              value: "{{ .Values.mariadb.config.maxrestores }}"
             - name: MARIA_USERNAME
               value: "{{ .Values.mariadb.config.mariadbUser }}"
             - name: MARIA_PORT
               value: "{{ .Values.mariadb.config.port }}"
+            - name: DATE
+              value: "{{ .Values.restore.date }}"
             - name: MARIADB_DB
               value: "{{ .Values.mariadb.config.databaseName }}"
             - name: MARIA_PASSWORD
@@ -308,7 +188,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgre-backups-script
+  name: postgre-restores-script
   namespace: {{ .Values.namespace }}
 data:
 {{ (.Files.Glob "scripts/postgresql.sh").AsConfig | indent 2 }}
@@ -327,73 +207,9 @@ spec:
       storage: {{ .Values.postgresql.config.diskSize }}
 ---
 apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: "postgre-backup"
-  namespace: {{ .Values.postgresql.config.namespace }}
-spec:
-  schedule: {{ .Values.postgresql.config.schedule }}
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
-  jobTemplate:
-    spec:
-      backoffLimit: 3
-      template:
-        spec:
-          terminationGracePeriodSeconds: 0
-          restartPolicy: Never
-          volumes:
-          - name: scripts
-            configMap:
-              name: postgre-backups-script
-              defaultMode: 0777
-          - name: postgre-snapshotter
-            persistentVolumeClaim:
-              claimName: postgre-snapshotter
-          containers:
-            - image: mcr.microsoft.com/azure-cli
-              name: postgre-snapshotter
-              env:
-                - name: POSTGRES_CONNECTION_STRING
-                  value: "{{ .Values.postgresql.config.connectionString }}"
-                - name: AZURE_STORAGE_ACCOUNT
-                  value: "{{ .Values.azure.storageAccount }}"
-                - name: CONTAINER
-                  value: "{{ .Values.azure.container }}"
-                - name: BACKUP_PATH
-                  value: "{{ .Values.postgresql.config.path }}"
-                - name: MAX_BACKUPS
-                  value: "{{ .Values.postgresql.config.maxBackups }}"
-                - name: POSTGRES_USERNAME
-                  value: "root"
-                - name: POSTGRES_HOST
-                  value: "{{ .Values.postgresql.config.host }}"
-                - name: POSTGRES_PORT
-                  value: "{{ .Values.postgresql.config.port }}"
-                - name: POSTGRES_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{ .Values.postgresql.config.secret }}"
-                      key: postgres-password
-                      optional: false
-                - name: AZURE_STORAGE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{ .Values.azure.azureSecret }}"
-                      key: azure.client.default.key
-                      optional: false
-              volumeMounts:
-                - mountPath: "/postgredump"
-                  name: postgre-snapshotter
-                - name: scripts
-                  mountPath: /scripts
-              command:
-                - "/scripts/postgresql.sh"
----
-apiVersion: batch/v1
 kind: Job
 metadata:
-  name: postgre-backup-0
+  name: postgre-restore-0
   namespace: {{ .Values.postgresql.config.namespace }}
 spec:
   template:
@@ -402,7 +218,7 @@ spec:
       volumes:
       - name: scripts
         configMap:
-          name: postgre-backups-script
+          name: postgre-restores-script
           defaultMode: 0777
       - name: postgre-snapshotter
         persistentVolumeClaim:
@@ -417,10 +233,10 @@ spec:
               value: "{{ .Values.azure.storageAccount }}"
             - name: CONTAINER
               value: "{{ .Values.azure.container }}"
-            - name: BACKUP_PATH
+            - name: restore_PATH
               value: "{{ .Values.postgresql.config.path }}"
-            - name: MAX_BACKUPS
-              value: "{{ .Values.postgresql.config.maxBackups }}"
+            - name: MAX_restoreS
+              value: "{{ .Values.postgresql.config.maxrestores }}"
             - name: POSTGRES_USERNAME
               value: "root"
             - name: POSTGRES_HOST
@@ -463,7 +279,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: neo4j-backups-script
+  name: neo4j-restores-script
   namespace: {{ .Values.namespace }}
 data:
 {{ (.Files.Glob "scripts/neo4j.sh").AsConfig | indent 2 }}
@@ -481,70 +297,11 @@ spec:
     requests:
       storage: {{ .Values.neo4j.config.diskSize }}
 ---
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: "neo4j-backup"
-  namespace: {{ .Values.neo4j.config.namespace }}
-spec:
-  schedule: {{ .Values.neo4j.config.schedule }}
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
-  jobTemplate:
-    spec:
-      backoffLimit: 3
-      template:
-        spec:
-          terminationGracePeriodSeconds: 0
-          restartPolicy: Never
-          volumes:
-          - name: scripts
-            configMap:
-              name: neo4j-backups-script
-              defaultMode: 0777
-          - name: neo4j-snapshotter
-            persistentVolumeClaim:
-              claimName: neo4j-snapshotter
-          containers:
-            - image: mcr.microsoft.com/azure-cli
-              name: neo4j-snapshotter
-              env:
-                - name: NEO4J_CONNECTION_STRING
-                  value: "{{ .Values.neo4j.config.connectionString }}"
-                - name: AZURE_STORAGE_ACCOUNT
-                  value: "{{ .Values.azure.storageAccount }}"
-                - name: CONTAINER
-                  value: "{{ .Values.azure.container}}"
-                - name: BACKUP_PATH
-                  value: "{{ .Values.neo4j.config.path }}"
-                - name: MAX_BACKUPS
-                  value: "{{ .Values.neo4j.config.maxBackups }}"
-                - name: NEO4J_USERNAME
-                  value: "neo4j"
-                - name: NEO4J_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{ .Values.neo4j.config.secret }}"
-                      key: NEO4J_AUTH
-                      optional: false
-                - name: AZURE_STORAGE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{ .Values.azure.azureSecret }}"
-                      key: azure.client.default.key
-                      optional: false
-              volumeMounts:
-                - mountPath: "/neo4jdump"
-                  name: neo4j-snapshotter
-                - name: scripts
-                  mountPath: /scripts
-              command:
-                - "/scripts/neo4j.sh"
----
+
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: neo4j-backup-0
+  name: neo4j-restore-0
   namespace: {{ .Values.neo4j.config.namespace }}
 spec:
   template:
@@ -553,7 +310,7 @@ spec:
       volumes:
       - name: scripts
         configMap:
-          name: neo4j-backups-script
+          name: neo4j-restores-script
           defaultMode: 0777
       - name: neo4j-snapshotter
         persistentVolumeClaim:
@@ -568,10 +325,10 @@ spec:
               value: "{{ .Values.azure.storageAccount }}"
             - name: CONTAINER
               value: "{{ .Values.azure.container}}"
-            - name: BACKUP_PATH
+            - name: restore_PATH
               value: "{{ .Values.neo4j.config.path }}"
-            - name: MAX_BACKUPS
-              value: "{{ .Values.neo4j.config.maxBackups }}"
+            - name: MAX_restoreS
+              value: "{{ .Values.neo4j.config.maxrestores }}"
             - name: NEO4J_USERNAME
               value: "neo4j"
             - name: NEO4J_PASSWORD
@@ -610,7 +367,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: couch-backups-script
+  name: couch-restores-script
   namespace: {{ .Values.namespace }}
 data:
 {{ (.Files.Glob "scripts/couchdb.sh").AsConfig | indent 2 }}
@@ -628,70 +385,11 @@ spec:
     requests:
       storage: {{ .Values.couchdb.config.diskSize }}
 ---
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: "couch-backup"
-  namespace: {{ .Values.couchdb.config.namespace }}
-spec:
-  schedule: {{ .Values.couchdb.config.schedule }}
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
-  jobTemplate:
-    spec:
-      backoffLimit: 3
-      template:
-        spec:
-          terminationGracePeriodSeconds: 0
-          restartPolicy: Never
-          volumes:
-          - name: scripts
-            configMap:
-              name: couch-backups-script
-              defaultMode: 0777
-          - name: couch-snapshotter
-            persistentVolumeClaim:
-              claimName: couch-snapshotter
-          containers:
-            - image: mcr.microsoft.com/azure-cli
-              name: couch-snapshotter
-              env:
-                - name: COUCH_CONNECTION_STRING
-                  value: "{{ .Values.couchdb.config.connectionString }}"
-                - name: AZURE_STORAGE_ACCOUNT
-                  value: "{{ .Values.azure.storageAccount }}"
-                - name: CONTAINER
-                  value: "{{ .Values.azure.container }}"
-                - name: BACKUP_PATH
-                  value: "{{ .Values.couchdb.config.path }}"
-                - name: MAX_BACKUPS
-                  value: "{{ .Values.couchdb.config.maxBackups }}"
-                - name: COUCH_USERNAME
-                  value: "root"
-                - name: COUCH_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{ .Values.couchdb.config.secret }}"
-                      key: adminPassword
-                      optional: false
-                - name: AZURE_STORAGE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: "{{ .Values.azure.azureSecret }}"
-                      key: azure.client.default.key
-                      optional: false
-              volumeMounts:
-                - mountPath: "/couchdump"
-                  name: couch-snapshotter
-                - name: scripts
-                  mountPath: /scripts
-              command:
-                - "/scripts/couchdb.sh"
----
+ 
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: couch-backup-0
+  name: couch-restore-0
   namespace: {{ .Values.couchdb.config.namespace }}
 spec:
   template:
@@ -700,7 +398,7 @@ spec:
       volumes:
       - name: scripts
         configMap:
-          name: couch-backups-script
+          name: couch-restores-script
           defaultMode: 0777
       - name: couch-snapshotter
         persistentVolumeClaim:
@@ -715,10 +413,10 @@ spec:
               value: "{{ .Values.azure.storageAccount }}"
             - name: CONTAINER
               value: "{{ .Values.azure.container }}"
-            - name: BACKUP_PATH
+            - name: restore_PATH
               value: "{{ .Values.couchdb.config.path }}"
-            - name: MAX_BACKUPS
-              value: "{{ .Values.couchdb.config.maxBackups }}"
+            - name: MAX_restoreS
+              value: "{{ .Values.couchdb.config.maxrestores }}"
             - name: COUCH_USERNAME
               value: "root"
             - name: COUCH_PASSWORD

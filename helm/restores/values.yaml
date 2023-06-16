@@ -1,3 +1,5 @@
+restore:
+  date: "202306152041"
 mongo:
   enabled: false
   config:
@@ -16,7 +18,7 @@ mongo:
     provider: Azure
 
 mariadb:
-  enabled: true
+  enabled: false
   config:
     socket: /opt/bitnami/mariadb/tmp/mysql.sock
     port: 3306
@@ -35,13 +37,10 @@ mariadb:
     schedule: "0 */12 * * *"
     diskSize: 2
     storageClass: hostpath
-    provider: Azure
-    restore:
-      enabled: true
-      date: 202306160000
+    provider: Azure    
 
 postgresql:
-  enabled: false
+  enabled: true
   config:
     namespace: default
     hots: databases-postgresql
@@ -100,3 +99,4 @@ azure:
   container: backups
   azureSecret: azure-storage-account-key
   provider: Azure
+
