@@ -36,6 +36,9 @@ mariadb:
     diskSize: 2
     storageClass: hostpath
     provider: Azure
+    restore:
+      enabled: true
+      date: 202306160000
 
 postgresql:
   enabled: false
