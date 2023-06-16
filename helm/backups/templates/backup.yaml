@@ -365,11 +365,13 @@ spec:
                 - name: MAX_BACKUPS
                   value: "{{ .Values.postgresql.config.maxBackups }}"
                 - name: POSTGRES_USERNAME
-                  value: "root"
+                  value: "postgres"
                 - name: POSTGRES_HOST
                   value: "{{ .Values.postgresql.config.host }}"
                 - name: POSTGRES_PORT
                   value: "{{ .Values.postgresql.config.port }}"
+                - name: POSTGRES_DB
+                  value: "postgres"
                 - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -422,7 +424,7 @@ spec:
             - name: MAX_BACKUPS
               value: "{{ .Values.postgresql.config.maxBackups }}"
             - name: POSTGRES_USERNAME
-              value: "root"
+              value: "postgres"
             - name: POSTGRES_HOST
               value: "{{ .Values.postgresql.config.host }}"
             - name: POSTGRES_PORT

@@ -38,7 +38,7 @@ mariadb:
     provider: Azure
 
 postgresql:
-  enabled: false
+  enabled: true
   config:
     namespace: default
     hots: databases-postgresql

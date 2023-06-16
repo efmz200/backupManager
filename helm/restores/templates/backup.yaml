@@ -11,7 +11,7 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongo-snapshotter
+  name: mongo-snapshott
   namespace: {{ .Values.mongo.config.namespace }}
 spec:
   storageClassName: {{ .Values.mongo.config.storageClass }}
@@ -36,12 +36,12 @@ spec:
         configMap:
           name: mongo-restores-script
           defaultMode: 0777
-      - name: mongo-snapshotter
+      - name: mongo-snapshott
         persistentVolumeClaim:
-          claimName: mongo-snapshotter
+          claimName: mongo-snapshott
       containers:
         - image: mcr.microsoft.com/azure-cli
-          name: mongo-snapshotter
+          name: mongo-snapshott
           env:
             - name: MONGO_CONNECTION_STRING
               value: "{{ .Values.mongo.config.connectionString }}"
@@ -71,7 +71,7 @@ spec:
                   optional: false
           volumeMounts:
             - mountPath: "/mongodump"
-              name: mongo-snapshotter
+              name: mongo-snapshott
             - name: scripts
               mountPath: /scripts
           command:
@@ -100,7 +100,7 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: maria-snapshotter
+  name: maria-snapshott
   namespace: {{ .Values.mariadb.config.namespace }}
 spec:
   storageClassName: {{ .Values.mariadb.config.storageClass }}
@@ -125,12 +125,12 @@ spec:
         configMap:
           name: maria-restores-script
           defaultMode: 0777
-      - name: maria-snapshotter
+      - name: maria-snapshott
         persistentVolumeClaim:
-          claimName: maria-snapshotter
+          claimName: maria-snapshott
       containers:
         - image: mcr.microsoft.com/azure-cli
-          name: maria-snapshotter
+          name: maria-snapshott
           env:
             - name: AZURE_STORAGE_ACCOUNT
               value: "{{ .Values.azure.storageAccount }}"
@@ -166,7 +166,7 @@ spec:
                   optional: false           
           volumeMounts:
             - mountPath: "/mariadump"
-              name: maria-snapshotter
+              name: maria-snapshott
             - name: scripts
               mountPath: /scripts
           command:
@@ -196,7 +196,7 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: postgre-snapshotter
+  name: postgre-snapshott
   namespace: {{ .Values.postgresql.config.namespace }}
 spec:
   storageClassName: {{ .Values.postgresql.config.storageClass }}
@@ -220,12 +220,12 @@ spec:
         configMap:
           name: postgre-restores-script
           defaultMode: 0777
-      - name: postgre-snapshotter
+      - name: postgre-snapshott
         persistentVolumeClaim:
-          claimName: postgre-snapshotter
+          claimName: postgre-snapshott
       containers:
         - image: mcr.microsoft.com/azure-cli
-          name: postgre-snapshotter
+          name: postgre-snapshott
           env:
             - name: POSTGRES_CONNECTION_STRING
               value: "{{ .Values.postgresql.config.connectionString }}"
@@ -238,11 +238,15 @@ spec:
             - name: MAX_restoreS
               value: "{{ .Values.postgresql.config.maxrestores }}"
             - name: POSTGRES_USERNAME
-              value: "root"
+              value: "postgres"
             - name: POSTGRES_HOST
               value: "{{ .Values.postgresql.config.host }}"
             - name: POSTGRES_PORT
               value: "{{ .Values.postgresql.config.port }}"
+            - name: DATE
+              value: "{{ .Values.restore.date }}"
+            - name: POSTGRES_DB
+              value: "postgres"
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -257,7 +261,7 @@ spec:
                   optional: false
           volumeMounts:
             - mountPath: "/postgredump"
-              name: postgre-snapshotter
+              name: postgre-snapshott
             - name: scripts
               mountPath: /scripts
           command:
@@ -287,7 +291,7 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: neo4j-snapshotter
+  name: neo4j-snapshott
   namespace: {{ .Values.neo4j.config.namespace }}
 spec:
   storageClassName: {{ .Values.neo4j.config.storageClass }}
@@ -312,12 +316,12 @@ spec:
         configMap:
           name: neo4j-restores-script
           defaultMode: 0777
-      - name: neo4j-snapshotter
+      - name: neo4j-snapshott
         persistentVolumeClaim:
-          claimName: neo4j-snapshotter
+          claimName: neo4j-snapshott
       containers:
         - image: mcr.microsoft.com/azure-cli
-          name: neo4j-snapshotter
+          name: neo4j-snapshott
           env:
             - name: NEO4J_CONNECTION_STRING
               value: "{{ .Values.neo4j.config.connectionString }}"
@@ -345,7 +349,7 @@ spec:
                   optional: false
           volumeMounts:
             - mountPath: "/neo4jdump"
-              name: neo4j-snapshotter
+              name: neo4j-snapshott
             - name: scripts
               mountPath: /scripts
           command:
@@ -375,7 +379,7 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: couch-snapshotter
+  name: couch-snapshott
   namespace: {{ .Values.couchdb.config.namespace }}
 spec:
   storageClassName: {{ .Values.couchdb.config.storageClass }}
@@ -400,12 +404,12 @@ spec:
         configMap:
           name: couch-restores-script
           defaultMode: 0777
-      - name: couch-snapshotter
+      - name: couch-snapshott
         persistentVolumeClaim:
-          claimName: couch-snapshotter
+          claimName: couch-snapshott
       containers:
         - image: mcr.microsoft.com/azure-cli
-          name: couch-snapshotter
+          name: couch-snapshott
           env:
             - name: COUCH_CONNECTION_STRING
               value: "{{ .Values.couchdb.config.connectionString }}"
@@ -433,7 +437,7 @@ spec:
                   optional: false
           volumeMounts:
             - mountPath: "/couchdump"
-              name: couch-snapshotter
+              name: couch-snapshott
             - name: scripts
               mountPath: /scripts
           command:

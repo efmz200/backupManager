@@ -5,13 +5,13 @@ apk update
 apk upgrade
 apk add postgresql-client
 az config set extension.use_dynamic_install=yes_without_prompt
-
-
-
-pg_dumpall --username="$POSTGRES_USERNAME" --password="$POSTGRES_PASSWORD" --port="$POSTGRES_PORT" --host="$POSTGRES_HOST" > /postgresqlbackup/$DATE/backup.sql
+export PGPASSWORD="$POSTGRES_PASSWORD"
 echo '----------------'
-ls /postgresqlbackup/$DATE
+echo password: $POSTGRES_PASSWORD
 echo '----------------'
+pg_dump --username=$POSTGRES_USERNAME --dbname=$POSTGRES_DB  --host=databases-postgresql --file=/postgresqlbackup/$DATE/backup.sql
+
+
 az storage blob directory upload --container $CONTAINER -s /postgresqlbackup/$DATE -d $BACKUP_PATH --auth-mode key --recursive
 rm -rf /postgresqlbackup/$DATE
 
